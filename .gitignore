@@ -1,0 +1,6 @@
+.venv
+*.txt
+*.png
+*.jpg
+.idea
+test.py
