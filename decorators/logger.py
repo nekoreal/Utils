@@ -2,35 +2,34 @@ from functools import wraps
 from typing import Callable
 from datetime import datetime
 
-def logger(txtfile:str='logs.txt',
-           printlog:bool=False,
-           raiseexc:bool=False,
-           time:bool=False,
-           ):
-    def wrapper(func:Callable):
+def logger(
+        txtfile:str="log.txt",
+        print_log:bool=False,
+        time_log:bool=False,
+        raise_exc:bool=True,
+        only_exc:bool=True,
+):
+    def wrapper(func:Callable) -> Callable:
         @wraps(func)
         def inner(*args, **kwargs):
-            nonlocal txtfile,printlog,raiseexc
-            exc,res=None,None
+            res, exc = None, None
             try:
-                res=func(*args, **kwargs)
+                res = func(*args, **kwargs)
             except Exception as e:
-                exc=e
-            if printlog:
-                print(f"Func nme:{func.__name__}"
-                      f"\nargs:{args}\nkwargs:{kwargs}"
-                      f"\nres:{res}"
-                      f"{f'\nexc:{exc}' if exc else '' }")
-            with open(txtfile, 'a') as f:
-                f.write(f"\n"
-                        f"{f"\n{datetime.now()}" if time else ''}"
-                        f"\nFunc nme:{func.__name__}"
-                        f"\nargs:{args}"
-                        f"\nkwargs:{kwargs}"
-                        f"\nres:{res}"
-                        f"\n{f"\n{'-'*10}\nexc:{exc}\n{'-'*10}\n" if exc else ''}")
-            if exc and raiseexc: raise exc
+                exc = e
+            if (not only_exc) or exc:
+                log = (f"{ datetime.now() if time_log else '' } "
+                       f"\nfunc:{func.__name__}->{res}"
+                       f"\nargs:{args} kwargs:{kwargs}"
+                       f"{f'\n\nexc{exc}\n' if exc else '' }")
+                if print_log:
+                    print(log)
+                with open(txtfile, "a") as f:
+                    f.write(log)
+                if raise_exc and exc:
+                    raise exc
             return res
         return inner
     return wrapper
+
 
