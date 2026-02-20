@@ -5,6 +5,9 @@ import shlex
 def cli():
     pass
 
+
+
+# настроек очень много, посмотри все
 @cli.command()
 @click.option('-u', '--user_id', type=int, help='ID пользователя')
 @click.option('-r', '--recursive', is_flag=True, help='Рекурсивно')
